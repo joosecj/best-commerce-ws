@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CategoryProductService {
     private final CategoryRepository categoryRepository;
@@ -31,5 +33,16 @@ public class CategoryProductService {
         categoryProduct = categoryRepository.save(categoryProduct);
         return new CategoryDTO(categoryProduct);
     }
+
+    @Transactional
+    public CategoryDTO update(UUID id, CategoryDTO categoryDTO) {
+        var categoryEntity = categoryRepository.getReferenceById(id);
+        categoryEntity.setName(categoryDTO.getName());
+        categoryEntity.setDescription(categoryDTO.getDescription());
+        categoryEntity = categoryRepository.save(categoryEntity);
+        return new CategoryDTO(categoryEntity);
+
+    }
+
 
 }
