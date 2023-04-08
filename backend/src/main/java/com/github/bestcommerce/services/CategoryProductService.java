@@ -26,6 +26,12 @@ public class CategoryProductService {
     }
 
     @Transactional
+    public Page<CategoryDTO> searchByName(String name, Pageable pageable) {
+        Page<Category> categories = categoryRepository.searchByName(name, pageable);
+        return categories.map(CategoryDTO::new);
+    }
+
+    @Transactional
     public CategoryDTO insert(CategoryDTO categoryDTO) {
         Category categoryProduct = new CategoryProduct();
         categoryProduct.setName(categoryDTO.getName());
@@ -41,7 +47,10 @@ public class CategoryProductService {
         categoryEntity.setDescription(categoryDTO.getDescription());
         categoryEntity = categoryRepository.save(categoryEntity);
         return new CategoryDTO(categoryEntity);
-
+    }
+    @Transactional()
+    public void delete(UUID id) {
+        categoryRepository.deleteById(id);
     }
 
 

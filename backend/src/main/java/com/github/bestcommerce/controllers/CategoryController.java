@@ -26,6 +26,13 @@ public class CategoryController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping(value = "/search")
+    public ResponseEntity<Page<CategoryDTO>> searchByName(@RequestParam(name = "name", defaultValue = "") String name,
+                                                    Pageable pageable) {
+        Page<CategoryDTO> dto = categoryProductService.searchByName(name, pageable);
+        return ResponseEntity.ok(dto);
+    }
+
     @PostMapping(value = "/create")
     public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
         dto = categoryProductService.insert(dto);
@@ -38,6 +45,11 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> update(@PathVariable UUID id, @RequestBody CategoryDTO dto) {
         dto = categoryProductService.update(id, dto);
         return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        return null;
     }
 
 }
