@@ -4,6 +4,8 @@ import com.github.bestcommerce.dtos.v1.CategoryDTO;
 import com.github.bestcommerce.entities.Category;
 import com.github.bestcommerce.entities.CategoryProduct;
 import com.github.bestcommerce.repositories.CategoryRepository;
+import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,11 +45,15 @@ public class CategoryProductService {
 
     @Transactional
     public CategoryDTO update(UUID id, CategoryDTO categoryDTO) {
-        var categoryEntity = categoryRepository.getReferenceById(id);
-        categoryEntity.setName(categoryDTO.getName());
-        categoryEntity.setDescription(categoryDTO.getDescription());
-        categoryEntity = categoryRepository.save(categoryEntity);
-        return new CategoryDTO(categoryEntity);
+        try {
+            var categoryEntity = categoryRepository.getReferenceById(id);
+            categoryEntity.setName(categoryDTO.getName());
+            categoryEntity.setDescription(categoryDTO.getDescription());
+            categoryEntity = categoryRepository.save(categoryEntity);
+            return new CategoryDTO(categoryEntity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Category not found");
+        }
     }
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(UUID id) {
