@@ -1,0 +1,36 @@
+package com.github.bestcommerce.controllers;
+
+import com.github.bestcommerce.dtos.v1.CategoryDTO;
+import com.github.bestcommerce.services.CategoryProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping(value = "/api/v1/categories")
+public class CategoryController {
+    private final CategoryProductService categoryProductService;
+
+    public CategoryController(CategoryProductService categoryProductService) {
+        this.categoryProductService = categoryProductService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CategoryDTO>> findAll(Pageable pageable) {
+        Page<CategoryDTO> dto = categoryProductService.findAll(pageable);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping(value = "/create")
+    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
+        dto = categoryProductService.insert(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(dto.getId()).toUri();
+        return ResponseEntity.created(uri).body(dto);
+    }
+
+}
