@@ -1,5 +1,6 @@
 package com.github.bestcommerce.dtos.v1;
 
+import com.github.bestcommerce.entities.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -21,6 +22,11 @@ public class CategoryDTO {
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+    public CategoryDTO(Category categoryEntity) {
+        this.id = categoryEntity.getId();
+        this.name = categoryEntity.getName();
+        this.description = categoryEntity.getDescription();
     }
 
     public UUID getId() {
