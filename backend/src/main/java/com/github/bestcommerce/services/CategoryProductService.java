@@ -4,10 +4,11 @@ import com.github.bestcommerce.dtos.v1.CategoryDTO;
 import com.github.bestcommerce.entities.Category;
 import com.github.bestcommerce.entities.CategoryProduct;
 import com.github.bestcommerce.repositories.CategoryRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -19,13 +20,13 @@ public class CategoryProductService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<CategoryDTO> findAll(Pageable pageable) {
         Page<Category> categories = categoryRepository.findAll(pageable);
         return categories.map(CategoryDTO::new);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<CategoryDTO> searchByName(String name, Pageable pageable) {
         Page<Category> categories = categoryRepository.searchByName(name, pageable);
         return categories.map(CategoryDTO::new);
@@ -48,7 +49,7 @@ public class CategoryProductService {
         categoryEntity = categoryRepository.save(categoryEntity);
         return new CategoryDTO(categoryEntity);
     }
-    @Transactional()
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(UUID id) {
         categoryRepository.deleteById(id);
     }
