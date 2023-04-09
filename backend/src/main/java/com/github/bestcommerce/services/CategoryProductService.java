@@ -42,9 +42,7 @@ public class CategoryProductService {
     public CategoryDTO insert(CategoryDTO categoryDTO) {
         try {
             Category categoryProduct = new CategoryProduct();
-            categoryProduct.setName(categoryDTO.getName());
-            categoryProduct.setDescription(categoryDTO.getDescription());
-            categoryProduct = categoryRepository.save(categoryProduct);
+            categoryProduct = copyDtoToEntity(categoryDTO, categoryProduct);
             return new CategoryDTO(categoryProduct);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
@@ -55,9 +53,7 @@ public class CategoryProductService {
     public CategoryDTO update(UUID id, CategoryDTO categoryDTO) {
         try {
             var categoryEntity = categoryRepository.getReferenceById(id);
-            categoryEntity.setName(categoryDTO.getName());
-            categoryEntity.setDescription(categoryDTO.getDescription());
-            categoryEntity = categoryRepository.save(categoryEntity);
+            categoryEntity = copyDtoToEntity(categoryDTO, categoryEntity);
             return new CategoryDTO(categoryEntity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Category not found");
@@ -65,6 +61,7 @@ public class CategoryProductService {
             throw new ResourceNotFoundException("Error");
         }
     }
+
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(UUID id) {
         try {
@@ -74,8 +71,13 @@ public class CategoryProductService {
         } catch (DataIntegrityViolationException e ) {
             throw new DataBaseException("Referential integrity failure");
         }
-
     }
 
+    private Category copyDtoToEntity(CategoryDTO categoryDTO, Category category) {
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
+        category = categoryRepository.save(category);
+        return category;
+    }
 
 }
