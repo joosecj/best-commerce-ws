@@ -7,6 +7,7 @@ import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.services.exceptions.DataBaseException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -39,11 +40,15 @@ public class CategoryProductService {
 
     @Transactional
     public CategoryDTO insert(CategoryDTO categoryDTO) {
-        Category categoryProduct = new CategoryProduct();
-        categoryProduct.setName(categoryDTO.getName());
-        categoryProduct.setDescription(categoryDTO.getDescription());
-        categoryProduct = categoryRepository.save(categoryProduct);
-        return new CategoryDTO(categoryProduct);
+        try {
+            Category categoryProduct = new CategoryProduct();
+            categoryProduct.setName(categoryDTO.getName());
+            categoryProduct.setDescription(categoryDTO.getDescription());
+            categoryProduct = categoryRepository.save(categoryProduct);
+            return new CategoryDTO(categoryProduct);
+        } catch (ConstraintViolationException e) {
+            throw new ResourceNotFoundException("Error");
+        }
     }
 
     @Transactional
@@ -56,6 +61,8 @@ public class CategoryProductService {
             return new CategoryDTO(categoryEntity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Category not found");
+        } catch (ConstraintViolationException e) {
+            throw new ResourceNotFoundException("Error");
         }
     }
     @Transactional(propagation = Propagation.SUPPORTS)
