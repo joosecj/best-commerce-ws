@@ -2,6 +2,7 @@ package com.github.bestcommerce.controllers;
 
 import com.github.bestcommerce.dtos.v1.CategoryDTO;
 import com.github.bestcommerce.services.CategoryProductService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/create")
-    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
+    public ResponseEntity<CategoryDTO> insert(@Valid @RequestBody CategoryDTO dto) {
         dto = categoryProductService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
@@ -42,7 +43,7 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<CategoryDTO> update(@PathVariable UUID id, @RequestBody CategoryDTO dto) {
+    public ResponseEntity<CategoryDTO> update(@PathVariable UUID id, @Valid @RequestBody CategoryDTO dto) {
         dto = categoryProductService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
