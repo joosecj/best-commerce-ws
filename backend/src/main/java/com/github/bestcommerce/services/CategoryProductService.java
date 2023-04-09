@@ -2,7 +2,8 @@ package com.github.bestcommerce.services;
 
 import com.github.bestcommerce.dtos.v1.CategoryDTO;
 import com.github.bestcommerce.entities.Category;
-import com.github.bestcommerce.entities.CategoryProduct;
+import com.github.bestcommerce.entities.CategoryFactory;
+import com.github.bestcommerce.entities.CategoryType;
 import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.services.exceptions.DataBaseException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
@@ -40,10 +41,12 @@ public class CategoryProductService {
 
     @Transactional
     public CategoryDTO insert(CategoryDTO categoryDTO) {
+        var categoryType = handleTypeCategory(categoryDTO.getType());
         try {
-            Category categoryProduct = new CategoryProduct();
-            categoryProduct = copyDtoToEntity(categoryDTO, categoryProduct);
-            return new CategoryDTO(categoryProduct);
+            Category categoryEntity = CategoryFactory.createCategory(categoryType);
+            copyDtoToEntity(categoryDTO, categoryEntity);
+            categoryEntity = categoryRepository.save(categoryEntity);
+            return new CategoryDTO(categoryEntity);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -53,7 +56,8 @@ public class CategoryProductService {
     public CategoryDTO update(UUID id, CategoryDTO categoryDTO) {
         try {
             var categoryEntity = categoryRepository.getReferenceById(id);
-            categoryEntity = copyDtoToEntity(categoryDTO, categoryEntity);
+            copyDtoToEntity(categoryDTO, categoryEntity);
+            categoryEntity = categoryRepository.save(categoryEntity);
             return new CategoryDTO(categoryEntity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Category not found");
@@ -73,11 +77,19 @@ public class CategoryProductService {
         }
     }
 
-    private Category copyDtoToEntity(CategoryDTO categoryDTO, Category category) {
-        category.setName(categoryDTO.getName());
+    private void copyDtoToEntity(CategoryDTO categoryDTO, Category category) {
+        category.setName(formatDataToSave(categoryDTO.getName()));
         category.setDescription(categoryDTO.getDescription());
-        category = categoryRepository.save(category);
-        return category;
+        category.setType(handleTypeCategory(formatDataToSave(categoryDTO.getType())));
+    }
+
+    private static CategoryType handleTypeCategory(String text) {
+        var type = formatDataToSave(text);
+        return CategoryType.valueOf(type);
+    }
+
+    private static String formatDataToSave(String text) {
+        return text.toUpperCase().trim();
     }
 
 }

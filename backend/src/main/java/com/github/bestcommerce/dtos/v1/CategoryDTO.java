@@ -14,19 +14,23 @@ public class CategoryDTO {
     @NotBlank(message = "required field")
     @Size(min = 3, max = 20)
     private String description;
+    @NotBlank(message = "required field")
+    private String type;
 
     public CategoryDTO() {
     }
 
-    public CategoryDTO(UUID id, String name, String description) {
+    public CategoryDTO(UUID id, String name, String description, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.type = type;
     }
     public CategoryDTO(Category categoryEntity) {
-        this.id = categoryEntity.getId();
-        this.name = categoryEntity.getName();
-        this.description = categoryEntity.getDescription();
+        id = categoryEntity.getId();
+        name = categoryEntity.getName();
+        description = categoryEntity.getDescription();
+        type = String.valueOf(categoryEntity.getType());
     }
 
     public UUID getId() {
@@ -39,5 +43,9 @@ public class CategoryDTO {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getType() {
+        return type;
     }
 }

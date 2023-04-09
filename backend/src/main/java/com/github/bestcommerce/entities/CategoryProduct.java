@@ -13,8 +13,8 @@ public class CategoryProduct extends Category{
     public CategoryProduct() {
     }
 
-    public CategoryProduct(UUID id, String name, String discription, Set<Product> products) {
-        super(id, name, discription);
+    public CategoryProduct(UUID id, String name, String discription, CategoryType type, Set<Product> products) {
+        super(id, name, discription, type);
         this.products = products;
     }
 
