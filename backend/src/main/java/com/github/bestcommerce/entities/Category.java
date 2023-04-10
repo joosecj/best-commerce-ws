@@ -5,7 +5,8 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tb_category")
+@Table
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
