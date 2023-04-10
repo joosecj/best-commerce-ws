@@ -41,14 +41,16 @@ public class CategoryProductService {
 
     @Transactional
     public CategoryDTO insert(CategoryDTO categoryDTO) {
-        var categoryType = handleTypeCategory(categoryDTO.getType());
         try {
+            var categoryType = handleTypeCategory(categoryDTO.getType());
             Category categoryEntity = CategoryFactory.createCategory(categoryType);
             copyDtoToEntity(categoryDTO, categoryEntity);
             categoryEntity = categoryRepository.save(categoryEntity);
             return new CategoryDTO(categoryEntity);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
+        } catch (IllegalArgumentException e) {
+            throw new ResourceNotFoundException("Type not registered");
         }
     }
 
