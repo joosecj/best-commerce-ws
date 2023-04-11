@@ -5,6 +5,7 @@ import com.github.bestcommerce.entities.Store;
 import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.repositories.StoreRepository;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,20 @@ public class StoreService {
             storeEntitny.setCategoryStore(categoryStore);
             storeEntitny = storeRepository.save(storeEntitny);
             return new StoreDTO(storeEntitny);
+        } catch (ConstraintViolationException e) {
+            throw new ResourceNotFoundException("Error");
+        }
+    }
+
+    @Transactional
+    public StoreDTO update(UUID id, StoreDTO storeDTO) {
+        try {
+            var storeEntity = storeRepository.getReferenceById(id);
+            copyDtoToEntity(storeDTO, storeEntity);
+            storeEntity = storeRepository.save(storeEntity);
+            return new StoreDTO(storeEntity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Store not found");
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }

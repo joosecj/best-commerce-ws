@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/api/v1/store")
@@ -33,5 +34,11 @@ public class StoreController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<StoreDTO> update(@PathVariable UUID id, @Valid @RequestBody StoreDTO dto) {
+        dto = storeService.update(id, dto);
+        return ResponseEntity.ok(dto);
     }
 }
