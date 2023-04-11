@@ -22,6 +22,7 @@ import java.util.UUID;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
+    private static final String ERROR_NOT_FOUND_STORE = "Store not found";
 
     public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository) {
         this.storeRepository = storeRepository;
@@ -31,7 +32,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public StoreDTO findById(UUID id) {
         Store storeEntity = storeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Store not found"));
+                StoreService::resourceNotFoundException);
         return new StoreDTO(storeEntity);
     }
 
@@ -45,8 +46,8 @@ public class StoreService {
     public StoreDTO insert(StoreDTO storeDTO) {
         try {
             UUID categoryId = storeDTO.getCategory().getId();
-            var categoryStore = categoryRepository.findById(categoryId).orElseThrow(()
-                    -> new ResourceNotFoundException("Category not found"));
+            var categoryStore = categoryRepository.findById(categoryId)
+                    .orElseThrow(StoreService::resourceNotFoundException);
             var storeEntitny = new Store();
             copyDtoToEntity(storeDTO, storeEntitny);
             storeEntitny.setCategoryStore(categoryStore);
@@ -65,7 +66,7 @@ public class StoreService {
             storeEntity = storeRepository.save(storeEntity);
             return new StoreDTO(storeEntity);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Store not found");
+            throw resourceNotFoundException();
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -76,10 +77,14 @@ public class StoreService {
         try {
             storeRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Store not found");
+            throw resourceNotFoundException();
         } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Referential integrity failure");
         }
+    }
+
+    private static ResourceNotFoundException resourceNotFoundException() {
+        return new ResourceNotFoundException(ERROR_NOT_FOUND_STORE);
     }
 
     private void copyDtoToEntity(StoreDTO storeDTO, Store store) {
