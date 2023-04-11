@@ -6,6 +6,8 @@ import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.repositories.StoreRepository;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +23,20 @@ public class StoreService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(readOnly = true)
+    public Page<StoreDTO> findAll(Pageable pageable) {
+        Page<Store> stores = storeRepository.findAll(pageable);
+        return stores.map(StoreDTO::new);
+    }
+
     @Transactional
     public StoreDTO insert(StoreDTO storeDTO) {
         try {
             UUID categoryId = storeDTO.getCategory().getId();
-            var storeEntitny = new Store();
-            copyDtoToEntity(storeDTO, storeEntitny);
             var categoryStore = categoryRepository.findById(categoryId).orElseThrow(()
                     -> new ResourceNotFoundException("Category not found"));
+            var storeEntitny = new Store();
+            copyDtoToEntity(storeDTO, storeEntitny);
             storeEntitny.setCategoryStore(categoryStore);
             storeEntitny = storeRepository.save(storeEntitny);
             return new StoreDTO(storeEntitny);

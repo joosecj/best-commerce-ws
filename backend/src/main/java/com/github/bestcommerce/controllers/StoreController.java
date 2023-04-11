@@ -3,11 +3,10 @@ package com.github.bestcommerce.controllers;
 import com.github.bestcommerce.dtos.v1.StoreDTO;
 import com.github.bestcommerce.services.StoreService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -20,6 +19,12 @@ public class StoreController {
 
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<StoreDTO>> findAll(Pageable pageable) {
+        Page<StoreDTO> dto = storeService.findAll(pageable);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping(value = "/create")
