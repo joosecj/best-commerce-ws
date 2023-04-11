@@ -22,6 +22,11 @@ public class StoreController {
         this.storeService = storeService;
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<StoreDTO> findById(@PathVariable UUID id) {
+        StoreDTO dto = storeService.findById(id);
+        return ResponseEntity.ok().body(dto);
+    }
     @GetMapping
     public ResponseEntity<Page<StoreDTO>> findAll(Pageable pageable) {
         Page<StoreDTO> dto = storeService.findAll(pageable);
@@ -40,5 +45,11 @@ public class StoreController {
     public ResponseEntity<StoreDTO> update(@PathVariable UUID id, @Valid @RequestBody StoreDTO dto) {
         dto = storeService.update(id, dto);
         return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        storeService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

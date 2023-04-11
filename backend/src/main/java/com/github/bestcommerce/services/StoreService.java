@@ -4,12 +4,16 @@ import com.github.bestcommerce.dtos.v1.StoreDTO;
 import com.github.bestcommerce.entities.Store;
 import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.repositories.StoreRepository;
+import com.github.bestcommerce.services.exceptions.DataBaseException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -22,6 +26,13 @@ public class StoreService {
     public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository) {
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public StoreDTO findById(UUID id) {
+        Store storeEntity = storeRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Store not found"));
+        return new StoreDTO(storeEntity);
     }
 
     @Transactional(readOnly = true)
@@ -60,11 +71,20 @@ public class StoreService {
         }
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(UUID id) {
+        try {
+            storeRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Store not found");
+        } catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Referential integrity failure");
+        }
+    }
 
     private void copyDtoToEntity(StoreDTO storeDTO, Store store) {
         store.setName(formatDataToSave(storeDTO.getName()));
     }
-
 
     private static String formatDataToSave(String text) {
         return text.toUpperCase().trim();
