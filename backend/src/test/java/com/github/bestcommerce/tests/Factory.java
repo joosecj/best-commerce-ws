@@ -15,7 +15,7 @@ public class Factory {
 
         Category category = CategoryFactory.createCategory(categoryType);
         category.setId(UUID.fromString("bfc46fb7-9b40-43fd-9e74-2fcf6f7218ab"));
-        category.setName("Futebol");
+        category.setName("TELEVISÃO");
         category.setDescription("Brasileirão - 2023");
         category.setType(categoryType);
         return category;
@@ -28,7 +28,7 @@ public class Factory {
 
     public static CategoryDTO createPersonCustomized(String name, String descritpion,  CategoryType type) {
         Category category = CategoryFactory.createCategory(type);
-        category.setId(UUID.fromString("dafda4546dfa"));
+        category.setId(UUID.fromString("bfc46fb7-9b40-43fd-9e74-2fcf6f7218ab"));
         category.setName(name);
         category.setDescription(descritpion);
         category.setType(type);
