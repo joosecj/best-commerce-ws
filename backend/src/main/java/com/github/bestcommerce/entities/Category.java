@@ -21,10 +21,10 @@ public abstract class Category {
     protected Category() {
     }
 
-    protected Category(UUID id, String name, String discription, CategoryType type) {
+    protected Category(UUID id, String name, String description, CategoryType type) {
         this.id = id;
         this.name = name;
-        this.description = discription;
+        this.description = description;
         this.type = type;
     }
 

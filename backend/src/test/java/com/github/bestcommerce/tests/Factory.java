@@ -1,9 +1,11 @@
 package com.github.bestcommerce.tests;
 
 import com.github.bestcommerce.dtos.v1.CategoryDTO;
+import com.github.bestcommerce.dtos.v1.StoreDTO;
 import com.github.bestcommerce.entities.Category;
 import com.github.bestcommerce.entities.CategoryFactory;
 import com.github.bestcommerce.entities.CategoryType;
+import com.github.bestcommerce.entities.Store;
 
 import java.util.UUID;
 
@@ -33,5 +35,17 @@ public class Factory {
         category.setDescription(descritpion);
         category.setType(type);
         return new CategoryDTO(category);
+    }
+
+    public static Store createStore(String type) {
+        typeCategory = type;
+        var typeCategory = createCategory(type);
+        return new Store(UUID.fromString("c37cbb48-fd22-452c-bced-ee13b5ad776b"),
+                "MEDICO", typeCategory);
+    }
+
+    public static StoreDTO createStoreDTO(){
+        Store store = createStore(typeCategory);
+        return new StoreDTO(store);
     }
 }
