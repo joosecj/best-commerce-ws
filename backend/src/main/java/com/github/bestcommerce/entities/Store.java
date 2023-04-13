@@ -20,7 +20,7 @@ public class Store {
     @JsonBackReference
     private Category categoryStore;
 
-    @OneToMany(mappedBy = "store")
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Product> products = new HashSet<>();
 
     public Store() {
