@@ -4,3 +4,8 @@ spring:
     name: best-commerce
   profiles:
     active: test
+
+springdoc:
+  pathsToMatch: /api/v1/**
+  swagger-ui:
+    use-root-path: true
