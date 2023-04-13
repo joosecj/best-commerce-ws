@@ -15,7 +15,9 @@ public class Order {
     private UUID id;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant saleDate;
-
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private User client;
     @OneToMany(mappedBy = "id.order")
     private Set<OrderProduct> items = new HashSet<>();
 
@@ -41,5 +43,17 @@ public class Order {
 
     public void setSaleDate(Instant saleDate) {
         this.saleDate = saleDate;
+    }
+
+    public User getClient() {
+        return client;
+    }
+
+    public void setClient(User client) {
+        this.client = client;
+    }
+
+    public Set<OrderProduct> getItems() {
+        return items;
     }
 }

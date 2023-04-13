@@ -9,18 +9,19 @@ import jakarta.persistence.Table;
 public class OrderProduct {
     @EmbeddedId
     private final OrderProductPK id = new OrderProductPK();
-
     private Integer quantity;
     private Double price;
+    private Integer tax;
 
     public OrderProduct() {
     }
 
-    public OrderProduct(Order order, Product product, Integer quantity, Double price) {
+    public OrderProduct(Order order, Product product, Integer quantity, Double price, Integer tax) {
         id.setOrder(order);
         id.setProduct(product);
         this.quantity = quantity;
         this.price = price;
+        this.tax = tax;
     }
 
     public Order getOrder() {
@@ -53,5 +54,13 @@ public class OrderProduct {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getTax() {
+        return tax;
+    }
+
+    public void setTax(Integer tax) {
+        this.tax = tax;
     }
 }
