@@ -47,7 +47,7 @@ public class StoreService {
         try {
             UUID categoryId = storeDTO.getCategory().getId();
             var categoryStore = categoryRepository.findById(categoryId)
-                    .orElseThrow(StoreService::resourceNotFoundException);
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
             var storeEntitny = new Store();
             copyDtoToEntity(storeDTO, storeEntitny);
             storeEntitny.setCategoryStore(categoryStore);
