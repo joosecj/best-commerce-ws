@@ -3,16 +3,18 @@ package com.github.bestcommerce.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
 @Entity
-public class CategoryProduct extends Category{
+@Table(name = "tb_category_product")
+public class CategoryProduct extends Category {
     @ManyToMany(mappedBy = "categories")
     @JsonManagedReference
-    private Set<Product> products = new HashSet<>();
+    private final Set<Product> products = new HashSet<>();
 
     public CategoryProduct() {
     }
@@ -25,16 +27,4 @@ public class CategoryProduct extends Category{
         return products;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CategoryProduct that = (CategoryProduct) o;
-        return Objects.equals(products, that.products);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(products);
-    }
 }

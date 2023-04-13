@@ -8,15 +8,16 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
 @Entity
 @Table(name = "tb_product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(nullable = false, unique = true, length =  20)
+    @Column(nullable = false, unique = true, length = 20)
     private String name;
-    @Column(columnDefinition = "TEXT", nullable = false, length =  200)
+    @Column(columnDefinition = "TEXT", nullable = false, length = 200)
     private String description;
     @Column(nullable = false)
     private Double price;
@@ -29,6 +30,7 @@ public class Product {
     )
     @JsonBackReference
     private Set<Category> categories = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "store_id")
     @JsonIgnore
@@ -101,11 +103,11 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(categories, product.categories);
+        return Objects.equals(id, product.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, categories);
+        return Objects.hash(id);
     }
 }
