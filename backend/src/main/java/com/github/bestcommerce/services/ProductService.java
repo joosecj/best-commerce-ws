@@ -8,11 +8,16 @@ import com.github.bestcommerce.entities.Product;
 import com.github.bestcommerce.repositories.CategoryRepository;
 import com.github.bestcommerce.repositories.ProductRepository;
 import com.github.bestcommerce.repositories.StoreRepository;
+import com.github.bestcommerce.services.exceptions.DataBaseException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -68,6 +73,31 @@ public class ProductService {
             return new ProductCategoriesStoreDTO(productEntity);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
+        }
+    }
+
+    @Transactional
+    public ProductCategoriesStoreDTO update(UUID id, ProductCategoriesStoreDTO productCategoriesStoreDTO) {
+        try {
+            var productEntity = productRepository.getReferenceById(id);
+            copyDtoToEntity(productCategoriesStoreDTO, productEntity);
+            productEntity = productRepository.save(productEntity);
+            return new ProductCategoriesStoreDTO(productEntity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(ERROR_NOT_FOUND_PRODUCT);
+        } catch (ConstraintViolationException e) {
+            throw new ResourceNotFoundException("Error");
+        }
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(UUID id) {
+        try {
+            productRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException(ERROR_NOT_FOUND_PRODUCT);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Referential integrity failure");
         }
     }
 

@@ -48,4 +48,16 @@ public class ProductController {
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ProductCategoriesStoreDTO> update(@PathVariable UUID id, @Valid @RequestBody ProductCategoriesStoreDTO dto) {
+        dto = productService.update(id, dto);
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
