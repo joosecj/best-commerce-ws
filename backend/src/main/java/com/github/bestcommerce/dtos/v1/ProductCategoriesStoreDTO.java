@@ -1,7 +1,6 @@
 package com.github.bestcommerce.dtos.v1;
 
 import com.github.bestcommerce.entities.Product;
-import com.github.bestcommerce.entities.Store;
 import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
@@ -23,13 +22,13 @@ public class ProductCategoriesStoreDTO {
     private String imgUrl;
     @NotEmpty(message = "Must have at least one category")
     private List<CategoryDTO> categories = new ArrayList<>();
-    private Store store;
+    private StoreDTO store;
 
     public ProductCategoriesStoreDTO() {
     }
 
     public ProductCategoriesStoreDTO(UUID id, String name, String description, Double price, String imgUrl,
-                                     List<CategoryDTO> categories, Store store) {
+                                     List<CategoryDTO> categories, StoreDTO store) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -46,8 +45,7 @@ public class ProductCategoriesStoreDTO {
         price = productEntity.getPrice();
         imgUrl = productEntity.getImgUrl();
         categories = productEntity.getCategories().stream().map(CategoryDTO::new).toList();
-        store = productEntity.getStore();
-
+        store = new StoreDTO(productEntity.getStore());
     }
 
     public UUID getId() {
@@ -74,8 +72,7 @@ public class ProductCategoriesStoreDTO {
         return categories;
     }
 
-    public Store getStore() {
+    public StoreDTO getStore() {
         return store;
     }
-
 }
