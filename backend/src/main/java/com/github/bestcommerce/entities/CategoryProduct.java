@@ -1,24 +1,30 @@
 package com.github.bestcommerce.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
 @Entity
-public class CategoryProduct extends Category{
+@Table(name = "tb_category_product")
+public class CategoryProduct extends Category {
     @ManyToMany(mappedBy = "categories")
-    private Set<Product> products;
+    @JsonManagedReference
+    private final Set<Product> products = new HashSet<>();
 
     public CategoryProduct() {
     }
 
-    public CategoryProduct(UUID id, String name, String description, CategoryType type, Set<Product> products) {
+    public CategoryProduct(UUID id, String name, String description, CategoryType type) {
         super(id, name, description, type);
-        this.products = products;
     }
 
     public Set<Product> getList() {
         return products;
     }
+
 }
