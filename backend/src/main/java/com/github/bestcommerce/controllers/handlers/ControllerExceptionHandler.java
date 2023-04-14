@@ -3,6 +3,7 @@ package com.github.bestcommerce.controllers.handlers;
 import com.github.bestcommerce.dtos.handlers.CustomError;
 import com.github.bestcommerce.dtos.handlers.ValidationError;
 import com.github.bestcommerce.services.exceptions.DataBaseException;
+import com.github.bestcommerce.services.exceptions.InvalidJwtAuthenticationException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.exception.ConstraintViolationException;
@@ -35,6 +36,13 @@ public class ControllerExceptionHandler {
     public final ResponseEntity<CustomError> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
         CustomError error = new CustomError(Instant.now(), status.value(), "Data already exists", request.getRequestURI());
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public final ResponseEntity<CustomError> handleInvalidJwtAuthenticationExceptions(Exception ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomError error = new CustomError(Instant.now(), status.value(), ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(error);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)

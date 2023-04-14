@@ -22,15 +22,15 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
 
     public OrderService(OrderRepository orderRepository, ProductRepository productRepository, OrderProductRepository orderProductRepository,
-                        UserRepository userRepository) {
+                        UserService userService) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.orderProductRepository = orderProductRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -44,9 +44,7 @@ public class OrderService {
     public OrderDTO insert(OrderDTO dto) {
         Order orderEntity = new Order();
         orderEntity.setSaleDate(Instant.now());
-        UUID idUser = UUID.fromString("8ddb099e-e17d-4dbb-9fc5-917b3b5f3610");
-        User userEntity = userRepository.findById(idUser).orElseThrow(()
-                -> new ResourceNotFoundException("User not Found"));
+        User userEntity = userService.authentiated();
         orderEntity.setClient(userEntity);
         for (OrderProductDTO itemDto : dto.getItems()) {
             Product productEntity = productRepository.getReferenceById(itemDto.getProductId());

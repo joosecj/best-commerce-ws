@@ -1,0 +1,27 @@
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/bestcommerce
+    username: postgres
+    password: 123456789
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        ddl-auto: update
+#  jpa:
+#    properties:
+#      javax:
+#        persistence:
+#          schema-generation:
+#            create-source: metadata
+#            scripts:
+#              action: create
+#              create-target: create.sql
+#          hibernate:
+#            hbm2ddl:
+#              delimiter: ";"
+

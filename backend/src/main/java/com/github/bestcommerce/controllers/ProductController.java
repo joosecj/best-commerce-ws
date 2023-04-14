@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -96,7 +97,7 @@ public class ProductController {
         Page<ProductMinDTO> dto = productService.findAll(pageable);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping(value = "/create")
     @Operation(summary = "Create Product", description = "Create Product",
             tags = {"Products"},
@@ -121,7 +122,7 @@ public class ProductController {
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}")
     @Operation(summary = "Update Product", description = "Update Product By Id",
             tags = {"Products"},
@@ -144,9 +145,8 @@ public class ProductController {
         dto = productService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
-    @PutMapping(value = "/{id}")
     @Operation(summary = "Delete Product By Id", description = "Delete Product By Id",
             tags = {"Products"},
             responses = {
