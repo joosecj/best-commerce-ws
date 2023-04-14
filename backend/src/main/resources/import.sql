@@ -14,9 +14,15 @@ INSERT INTO tb_product_category (product_id, category_id) VALUES ('6519d20f-e027
 INSERT INTO tb_product_category (product_id, category_id) VALUES ('6519d20f-e027-4df1-bcf4-e09a34e14b06', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3601');
 INSERT INTO tb_product_category (product_id, category_id) VALUES ('6519d20f-e027-4df1-bcf4-e09a34e14b06', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3602');
 
-INSERT INTO tb_user (id, name, email, phone, birth_date, password) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3610', 'Antonio Carlos', 'antonio@gmail.com', '966666666', '1987-12-13', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
-INSERT INTO tb_user (id, name, email, phone, birth_date, password) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3611', 'Maria Clara', 'maria@gmail.com', '966666666', '1993-09-13', '$2a$10$eACCYoNOHEqXve8aIWT8Nu3PkMXWBaOxJ9aORUYzfMQCbVBIhZ8tG');
+INSERT INTO tb_user (id, name, email, phone, birth_date, password, account_non_expired, account_non_locked, credentials_non_expired, enabled) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3610', 'Antonio Carlos', 'antonio@gmail.com', '966666666', '1987-12-13','a908c92848c92c7aab42ea2cabddad6d024f20d3d784121175a86d765b4696e7c08dbe0beb374239', 1, 1, 1, 1);
+INSERT INTO tb_user (id, name, email, phone, birth_date, password, account_non_expired, account_non_locked, credentials_non_expired, enabled) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3611', 'Maria Clara', 'maria@gmail.com', '966666666', '1993-09-13', 'b880839d60e9793b7c888d7121007529b6dad53284c1a34897b81f23871d4a535179ba7378ee8a97',  1, 1, 1, 1);
 
+INSERT INTO tb_permission (id, description) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3640', 'ADMIN');
+INSERT INTO tb_permission (id, description) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3641', 'CLIENT');
+
+INSERT INTO tb_user_permission (id_user, id_permission) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3610', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3640');
+INSERT INTO tb_user_permission (id_user, id_permission) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3610', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3641');
+INSERT INTO tb_user_permission (id_user, id_permission) VALUES ('8ddb099e-e17d-4dbb-9fc5-917b3b5f3611', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3641');
 
 INSERT INTO tb_order (id, sale_date, client_id) VALUES ('6519d20f-e027-4df1-bcf4-e09a34e14b07', TIMESTAMP WITH TIME ZONE '2022-07-25T13:00:00Z', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3610');
 INSERT INTO tb_order (id, sale_date, client_id) VALUES ('6519d20f-e027-4df1-bcf4-e09a34e14b08',TIMESTAMP WITH TIME ZONE '2022-07-29T15:50:00Z', '8ddb099e-e17d-4dbb-9fc5-917b3b5f3611');
