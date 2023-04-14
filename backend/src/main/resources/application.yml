@@ -1,13 +1,21 @@
 cors:
   originPatterns: http://localhost:3000,http://localhost:8080,https://www.wswork.com.br
 
+security:
+  jwt:
+    token:
+      secret-key: 53ccr3
+      expire-length: 3600000
+
 spring:
   application:
     name: best-commerce
   profiles:
-    active: test
+    active: dev
 
 springdoc:
-  pathsToMatch: /api/v1/**
+  pathsToMatch:
+    - /auth/**
+    - /api/v1/**
   swagger-ui:
     use-root-path: true

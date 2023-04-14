@@ -1,4 +1,10 @@
 
+security:
+  jwt:
+    token:
+      secret-key: 53ccr3
+      expire-length: 3600000
+
 spring:
   application:
     name: best-commerce
