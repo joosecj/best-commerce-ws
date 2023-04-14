@@ -1,0 +1,40 @@
+version: "3"
+services:
+  # ====================================================================================================================
+  # POSTGRES SERVER
+  # ====================================================================================================================
+  pg-docker-test:
+    image: postgres:14-alpine
+    container_name: dev-postgresql-test
+    environment:
+      POSTGRES_DB: "bestcommerce"
+      POSTGRES_PASSWORD: "123456789"
+    ports:
+      - 5433:5432
+    volumes:
+      - ${DATA_PATH_HOST}/postgresql/data:/var/lib/postgresql/data
+    networks:
+      - dev-network-test
+  # ====================================================================================================================
+  # PGADMIN
+  # ====================================================================================================================
+  pgadmin-docker:
+    image: dpage/pgadmin4
+    container_name: dev-pgadmin-test
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "jose@teste.com"
+      PGADMIN_DEFAULT_PASSWORD: "1234567"
+    ports:
+      - 15432:80
+    volumes:
+      - ${DATA_PATH_HOST}/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - pg-docker-test
+    networks:
+      - dev-network-test
+# ======================================================================================================================
+# REDE
+# ======================================================================================================================
+networks:
+  dev-network-test:
+    driver: bridge
