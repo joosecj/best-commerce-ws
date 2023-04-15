@@ -9,7 +9,6 @@ import com.github.bestcommerce.entities.User;
 import com.github.bestcommerce.repositories.OrderProductRepository;
 import com.github.bestcommerce.repositories.OrderRepository;
 import com.github.bestcommerce.repositories.ProductRepository;
-import com.github.bestcommerce.repositories.UserRepository;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,18 +41,27 @@ public class OrderService {
 
     @Transactional
     public OrderDTO insert(OrderDTO dto) {
+        var orderEntity = copyDtoToEntity(dto);
+        orderRepository.save(orderEntity);
+        orderProductRepository.saveAll(orderEntity.getItems());
+        return new OrderDTO(orderEntity);
+    }
+
+    private Order copyDtoToEntity(OrderDTO orderDTO) {
+        var today = Instant.now();
+        User userEntity = userService.authenticated();
         Order orderEntity = new Order();
-        orderEntity.setSaleDate(Instant.now());
-        User userEntity = userService.authentiated();
-        orderEntity.setClient(userEntity);
-        for (OrderProductDTO itemDto : dto.getItems()) {
+        for (OrderProductDTO itemDto : orderDTO.getItems()) {
             Product productEntity = productRepository.getReferenceById(itemDto.getProductId());
             OrderProduct orderItemEntity = new OrderProduct(orderEntity, productEntity, itemDto.getQuantity(),
                     productEntity.getPrice(), itemDto.getTax());
             orderEntity.getItems().add(orderItemEntity);
         }
-        orderRepository.save(orderEntity);
-        orderProductRepository.saveAll(orderEntity.getItems());
-        return new OrderDTO(orderEntity);
+        orderEntity.setSaleDate(today);
+        if (userEntity == null) {
+            throw new ResourceNotFoundException("user not logged in");
+        }
+        orderEntity.setClient(userEntity);
+        return orderEntity;
     }
 }
