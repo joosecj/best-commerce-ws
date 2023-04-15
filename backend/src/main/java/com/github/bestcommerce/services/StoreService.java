@@ -22,11 +22,13 @@ import java.util.UUID;
 public class StoreService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
     private static final String ERROR_NOT_FOUND_STORE = "Store not found";
 
-    public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository) {
+    public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository, UserService userService) {
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -45,14 +47,7 @@ public class StoreService {
     @Transactional
     public StoreDTO insert(StoreDTO storeDTO) {
         try {
-            UUID categoryId = storeDTO.getCategory().getId();
-            var categoryStore = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-            var storeEntitny = new Store();
-            copyDtoToEntity(storeDTO, storeEntitny);
-            storeEntitny.setCategoryStore(categoryStore);
-            storeEntitny = storeRepository.save(storeEntitny);
-            return new StoreDTO(storeEntitny);
+            return new StoreDTO( storeRepository.save(copyDtoToEntity(storeDTO)));
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -62,7 +57,7 @@ public class StoreService {
     public StoreDTO update(UUID id, StoreDTO storeDTO) {
         try {
             var storeEntity = storeRepository.getReferenceById(id);
-            copyDtoToEntity(storeDTO, storeEntity);
+            copyDtoToEntity(storeDTO);
             storeEntity = storeRepository.save(storeEntity);
             return new StoreDTO(storeEntity);
         } catch (EntityNotFoundException e) {
@@ -87,8 +82,20 @@ public class StoreService {
         return new ResourceNotFoundException(ERROR_NOT_FOUND_STORE);
     }
 
-    private void copyDtoToEntity(StoreDTO storeDTO, Store store) {
-        store.setName(formatDataToSave(storeDTO.getName()));
+    private Store copyDtoToEntity(StoreDTO storeDTO) {
+        var name = storeDTO.getName();
+        UUID categoryId = storeDTO.getCategory().getId();
+        var categoryStore = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        var userEntity = userService.authenticated();
+        if (userEntity == null) {
+            throw new ResourceNotFoundException("user not logged in");
+        }
+        return new Store(
+                formatDataToSave(name),
+                categoryStore,
+                userEntity
+        );
     }
 
     private static String formatDataToSave(String text) {

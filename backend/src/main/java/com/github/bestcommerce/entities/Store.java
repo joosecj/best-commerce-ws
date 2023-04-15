@@ -19,17 +19,20 @@ public class Store {
     @JoinColumn(name = "categoryStore_id")
     @JsonBackReference
     private Category categoryStore;
-
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Product> products = new HashSet<>();
+    @OneToOne
+    @MapsId
+    private User client;
 
     public Store() {
     }
 
-    public Store(UUID id, String name, Category categoryStore) {
-        this.id = id;
+
+    public Store(String name, Category categoryStore, User client) {
         this.name = name;
         this.categoryStore = categoryStore;
+        this.client = client;
     }
 
     public UUID getId() {
@@ -58,5 +61,13 @@ public class Store {
 
     public Set<Product> getProducts() {
         return products;
+    }
+
+    public User getClient() {
+        return client;
+    }
+
+    public void setClient(User client) {
+        this.client = client;
     }
 }

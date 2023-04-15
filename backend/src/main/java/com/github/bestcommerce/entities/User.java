@@ -37,7 +37,6 @@ public class User implements UserDetails, Serializable {
     private Boolean credentialsNonExpired;
     @Column(name = "enabled")
     private Boolean enabled;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_user_permission",
             joinColumns = {@JoinColumn(name = "id_user")},
@@ -46,6 +45,9 @@ public class User implements UserDetails, Serializable {
     private List<Permission> permissions;
     @OneToMany(mappedBy = "client")
     private List<Order> orders = new ArrayList<>();
+
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    private Store store;
 
     public User() {
     }
@@ -179,6 +181,14 @@ public class User implements UserDetails, Serializable {
 
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
     @Override
