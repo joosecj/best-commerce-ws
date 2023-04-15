@@ -2,7 +2,7 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/bestcommerce
+    url: jdbc:postgresql://172.30.0.1:5433/bestcommerce
     username: postgres
     password: 123456789
   jpa:
@@ -12,6 +12,9 @@ spring:
           lob:
             non_contextual_creation: true
         ddl-auto: update
+    open-in-view: false
+
+#SCPRIT PARA GERAR DB
 #  jpa:
 #    properties:
 #      javax:
