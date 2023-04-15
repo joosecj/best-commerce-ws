@@ -97,7 +97,7 @@ public class ProductController {
         Page<ProductMinDTO> dto = productService.findAll(pageable);
         return ResponseEntity.ok(dto);
     }
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/create")
     @Operation(summary = "Create Product", description = "Create Product",
             tags = {"Products"},
