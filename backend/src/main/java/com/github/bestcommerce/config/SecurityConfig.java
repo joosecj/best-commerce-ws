@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -47,16 +49,8 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(
-                                "/auth/signin",
-                                "/auth/refresh",
-                                "/api/v1/products/search",
-                                "/api/v1/categories/search",
-                                "/v3/api-docs/**",
-                                "/swagger-ui**/**"
-                        ).permitAll()
-                        .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/users").denyAll()
+                        .anyRequest().permitAll()
                 )
                 .cors()
                 .and()

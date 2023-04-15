@@ -2,6 +2,7 @@ package com.github.bestcommerce.entities;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
@@ -12,7 +13,6 @@ import java.util.*;
 @Entity
 @Table(name = "tb_user")
 public class User implements UserDetails, Serializable {
-
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -40,8 +40,8 @@ public class User implements UserDetails, Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_user_permission",
-            joinColumns = {@JoinColumn (name = "id_user")},
-            inverseJoinColumns = {@JoinColumn (name = "id_permission")}
+            joinColumns = {@JoinColumn(name = "id_user")},
+            inverseJoinColumns = {@JoinColumn(name = "id_permission")}
     )
     private List<Permission> permissions;
     @OneToMany(mappedBy = "client")
@@ -49,17 +49,13 @@ public class User implements UserDetails, Serializable {
 
     public User() {
     }
-    public List<String> getRoles() {
-        List<String> roles = new ArrayList<>();
-        for (Permission permission : permissions) {
-            roles.add(permission.getDescription());
-        }
-        return roles;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.permissions;
+        return permissions.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getDescription()
+                        .toUpperCase())).toList();
+
     }
 
     @Override
