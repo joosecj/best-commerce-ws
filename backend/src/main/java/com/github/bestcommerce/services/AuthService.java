@@ -1,5 +1,6 @@
 package com.github.bestcommerce.services;
 
+import com.github.bestcommerce.config.SecurityConfig;
 import com.github.bestcommerce.dtos.v1.AccountCreatDTO;
 import com.github.bestcommerce.dtos.v1.AccountCredentialsDTO;
 import com.github.bestcommerce.dtos.v1.TokenDTO;
@@ -8,24 +9,20 @@ import com.github.bestcommerce.entities.User;
 import com.github.bestcommerce.repositories.PermissionRepository;
 import com.github.bestcommerce.repositories.UserRepository;
 import com.github.bestcommerce.security.jwt.JwtTokenProvider;
+import com.github.bestcommerce.services.exceptions.DataBaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class AuthService {
@@ -40,6 +37,9 @@ public class AuthService {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    @Autowired
+    private SecurityConfig securityConfig;
 
     @SuppressWarnings("rawtypes")
     public ResponseEntity signin(AccountCredentialsDTO accountCredentialsDTO) {
@@ -92,17 +92,7 @@ public class AuthService {
     }
 
     private String hashAndSavePassword(String password) {
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-
-        Pbkdf2PasswordEncoder pbkdf2Encoder =
-                new Pbkdf2PasswordEncoder(
-                        "", 8, 185000,
-                        Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
-
-        encoders.put("pbkdf2", pbkdf2Encoder);
-        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-        passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
-        return passwordEncoder.encode(password);
+        return securityConfig.passwordEncoder().encode(password);
     }
 
     private LocalDate parseDate(String dateString) {
@@ -110,10 +100,18 @@ public class AuthService {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             date = LocalDate.parse(dateString, formatter);
+            validateFutureDate(date);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Data inválida. Formato esperado: dd/MM/yyyy.", e);
+            throw new DataBaseException("Invalid date. Expected format: dd/MM/yyyy.");
         }
         return date;
+    }
+
+    private void validateFutureDate(LocalDate date) {
+        LocalDate today = LocalDate.now();
+        if (date.isAfter(today)) {
+            throw new DataBaseException("Future date not allowed");
+        }
     }
 
     private List<Permission> grantClientPermission() {
