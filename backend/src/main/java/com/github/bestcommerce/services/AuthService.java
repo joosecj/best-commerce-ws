@@ -11,7 +11,6 @@ import com.github.bestcommerce.repositories.UserRepository;
 import com.github.bestcommerce.security.jwt.JwtTokenProvider;
 import com.github.bestcommerce.services.exceptions.DataBaseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,8 +40,7 @@ public class AuthService {
     @Autowired
     private SecurityConfig securityConfig;
 
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity signin(AccountCredentialsDTO accountCredentialsDTO) {
+    public TokenDTO signin(AccountCredentialsDTO accountCredentialsDTO) {
         try {
             var email = accountCredentialsDTO.getEmail();
             var password = accountCredentialsDTO.getPassword();
@@ -53,22 +51,19 @@ public class AuthService {
                 throw new UsernameNotFoundException("Email " + email + " not found!");
             }
             List<String> roles = user.getPermissions().stream().map(Permission::getDescription).toList();
-            TokenDTO tokenResponse = tokenProvider.createAccessToken(email, roles);
-            return ResponseEntity.ok(tokenResponse);
+            return tokenProvider.createAccessToken(email, roles);
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid email/password supplied!");
         }
 
     }
 
-    @SuppressWarnings("rawtypes")
-    public ResponseEntity refreshToken(String email, String refreshToken) {
+    public TokenDTO refreshToken(String email, String refreshToken) {
         var user = userRepository.findByUserEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("Email " + email + " not found!");
         }
-        TokenDTO tokenResponse = tokenProvider.refreshToken(refreshToken);
-        return ResponseEntity.ok(tokenResponse);
+        return tokenProvider.refreshToken(refreshToken);
     }
 
     @Transactional
