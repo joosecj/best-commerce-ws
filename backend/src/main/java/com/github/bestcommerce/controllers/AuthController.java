@@ -1,9 +1,11 @@
 package com.github.bestcommerce.controllers;
 
+import com.github.bestcommerce.dtos.v1.AccountCreatDTO;
 import com.github.bestcommerce.dtos.v1.AccountCredentialsDTO;
 import com.github.bestcommerce.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,13 @@ public class AuthController {
         var token = authService.signin(accountCredentialsDTO);
         if (token == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!");
         return token;
+    }
+
+    @Operation(summary = "Create registration")
+    @PostMapping(value = "/signup")
+    public ResponseEntity<String> signup(@Valid @RequestBody AccountCreatDTO accountCreatDTO) {
+        authService.signup(accountCreatDTO);
+        return ResponseEntity.ok("Registration completed successfully!");
     }
 
     @SuppressWarnings("rawtypes")
