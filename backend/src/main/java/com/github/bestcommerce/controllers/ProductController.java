@@ -39,7 +39,8 @@ public class ProductController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = ProductCategoriesStoreDTO.class))
+                                            array = @ArraySchema(schema =
+                                            @Schema(implementation = ProductCategoriesStoreDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -106,7 +107,8 @@ public class ProductController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = ProductCategoriesStoreDTO.class))
+                                            array = @ArraySchema(schema =
+                                            @Schema(implementation = ProductCategoriesStoreDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -131,7 +133,8 @@ public class ProductController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = ProductCategoriesStoreDTO.class))
+                                            array = @ArraySchema(schema =
+                                            @Schema(implementation = ProductCategoriesStoreDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -141,7 +144,8 @@ public class ProductController {
                     @ApiResponse(description = "Conflict", responseCode = "409", content = @Content),
             }
     )
-    public ResponseEntity<ProductCategoriesStoreDTO> update(@PathVariable UUID id, @Valid @RequestBody ProductCategoriesStoreDTO dto) {
+    public ResponseEntity<ProductCategoriesStoreDTO> update(@PathVariable UUID id,
+                                                            @Valid @RequestBody ProductCategoriesStoreDTO dto) {
         dto = productService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
