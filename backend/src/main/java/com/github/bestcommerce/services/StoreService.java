@@ -1,8 +1,10 @@
 package com.github.bestcommerce.services;
 
 import com.github.bestcommerce.dtos.v1.StoreDTO;
+import com.github.bestcommerce.entities.Category;
 import com.github.bestcommerce.entities.Store;
 import com.github.bestcommerce.repositories.CategoryRepository;
+import com.github.bestcommerce.repositories.PermissionRepository;
 import com.github.bestcommerce.repositories.StoreRepository;
 import com.github.bestcommerce.services.exceptions.DataBaseException;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
@@ -23,12 +25,14 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CategoryRepository categoryRepository;
     private final UserService userService;
+    private final PermissionRepository permissionRepository;
     private static final String ERROR_NOT_FOUND_STORE = "Store not found";
 
-    public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository, UserService userService) {
+    public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository, UserService userService, PermissionRepository permissionRepository) {
         this.storeRepository = storeRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.permissionRepository = permissionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +51,8 @@ public class StoreService {
     @Transactional
     public StoreDTO insert(StoreDTO storeDTO) {
         try {
-            return new StoreDTO( storeRepository.save(copyDtoToEntity(storeDTO)));
+            var storeEntity = copyDtoToEntity(storeDTO);
+            return new StoreDTO(storeRepository.save(grantAdminPermission(storeEntity)));
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -58,8 +63,7 @@ public class StoreService {
         try {
             var storeEntity = storeRepository.getReferenceById(id);
             copyDtoToEntity(storeDTO);
-            storeEntity = storeRepository.save(storeEntity);
-            return new StoreDTO(storeEntity);
+            return new StoreDTO(storeRepository.save(storeEntity));
         } catch (EntityNotFoundException e) {
             throw resourceNotFoundException();
         } catch (ConstraintViolationException e) {
@@ -84,21 +88,33 @@ public class StoreService {
 
     private Store copyDtoToEntity(StoreDTO storeDTO) {
         var name = storeDTO.getName();
-        UUID categoryId = storeDTO.getCategory().getId();
-        var categoryStore = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        Category categoryStore = getCategory(storeDTO);
         var userEntity = userService.authenticated();
         if (userEntity == null) {
             throw new ResourceNotFoundException("user not logged in");
         }
         return new Store(
-                formatDataToSave(name),
+                formatTextToUppercaseAndTrim(name),
                 categoryStore,
                 userEntity
         );
     }
 
-    private static String formatDataToSave(String text) {
+    private Category getCategory(StoreDTO storeDTO) {
+        UUID categoryId = storeDTO.getCategory().getId();
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
+
+    private Store grantAdminPermission(Store storeEntity) {
+        var idAdmin = UUID.fromString("8ddb099e-e17d-4dbb-9fc5-917b3b5f3640");
+        var permissionEntity = permissionRepository.findById(idAdmin).orElseThrow(
+                () -> new ResourceNotFoundException("Category not found"));
+        storeEntity.getClient().getPermissions().add(permissionEntity);
+        return storeEntity;
+    }
+
+    private static String formatTextToUppercaseAndTrim(String text) {
         return text.toUpperCase().trim();
     }
 
