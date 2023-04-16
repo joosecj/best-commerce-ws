@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,7 +27,7 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
-
+    @PreAuthorize("hasRole('CLIENT')")
     @GetMapping(value = "/{id}")
     @Operation(summary = "FindById Order", description = "FindById Order",
             tags = {"Orders"},
@@ -48,7 +49,7 @@ public class OrderController {
         OrderDTO dto = orderService.findById(id);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasRole('CLIENT')")
     @PostMapping(value = "/create")
     @Operation(summary = "Create Order", description = "Create Order",
             tags = {"Orders"},

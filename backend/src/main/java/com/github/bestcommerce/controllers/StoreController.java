@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -73,7 +74,7 @@ public class StoreController {
         Page<StoreDTO> dto = storeService.findAll(pageable);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasRole('CLIENT')")
     @PostMapping(value = "/create")
     @Operation(summary = "Create Store", description = "Create Store",
             tags = {"Stores"},
@@ -97,9 +98,9 @@ public class StoreController {
                 .buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}")
-    @Operation(summary = "Create Store", description = "Create Store",
+    @Operation(summary = "Update Store", description = "Update Store",
             tags = {"Stores"},
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200",
@@ -120,9 +121,9 @@ public class StoreController {
         dto = storeService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
-    @Operation(summary = "Create Store", description = "Create Store",
+    @Operation(summary = "Delete Store", description = "Delete Store",
             tags = {"Stores"},
             responses = {
                     @ApiResponse(description = "No Content", responseCode = "204",
