@@ -23,12 +23,13 @@ public class ProductCategoriesStoreDTO {
     @NotEmpty(message = "Must have at least one category")
     private List<CategoryDTO> categories = new ArrayList<>();
     private StoreCategoryDTO store;
+    private UserMinDTO owner;
 
     public ProductCategoriesStoreDTO() {
     }
 
     public ProductCategoriesStoreDTO(UUID id, String name, String description, Double price, String imgUrl,
-                                     List<CategoryDTO> categories, StoreCategoryDTO store) {
+                                     List<CategoryDTO> categories, StoreCategoryDTO store, UserMinDTO owner) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -36,6 +37,7 @@ public class ProductCategoriesStoreDTO {
         this.imgUrl = imgUrl;
         this.categories = categories;
         this.store = store;
+        this.owner = owner;
     }
 
     public ProductCategoriesStoreDTO(Product productEntity) {
@@ -46,6 +48,7 @@ public class ProductCategoriesStoreDTO {
         imgUrl = productEntity.getImgUrl();
         categories = productEntity.getCategories().stream().map(CategoryDTO::new).toList();
         store = new StoreCategoryDTO(productEntity.getStore());
+        owner = new UserMinDTO(productEntity.getStore().getClient());
     }
 
     public UUID getId() {
@@ -74,5 +77,9 @@ public class ProductCategoriesStoreDTO {
 
     public StoreCategoryDTO getStore() {
         return store;
+    }
+
+    public UserMinDTO getOwner() {
+        return owner;
     }
 }
