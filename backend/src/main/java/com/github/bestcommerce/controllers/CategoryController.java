@@ -29,6 +29,28 @@ public class CategoryController {
         this.categoryProductService = categoryProductService;
     }
 
+    @GetMapping(value = "/{id}")
+    @Operation(summary = "FindById Category", description = "FindById Category",
+            tags = {"Orders"},
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class))
+                                    )
+                            }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+            }
+    )
+    public ResponseEntity<CategoryDTO> findById(@PathVariable UUID id) {
+        CategoryDTO dto = categoryProductService.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping
     @Operation(summary = "Finds all Categories", description = "Finds all Categories",
             tags = {"Categories"},
@@ -71,6 +93,29 @@ public class CategoryController {
     public ResponseEntity<Page<CategoryDTO>> searchByName(@RequestParam(name = "name", defaultValue = "") String name,
                                                           Pageable pageable) {
         Page<CategoryDTO> dto = categoryProductService.searchByName(name, pageable);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping(value = "/searchType")
+    @Operation(summary = "Finds all Categories Search Type", description = "Finds all Categories Search Type",
+            tags = {"Categories"},
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = CategoryDTO.class))
+                                    )
+                            }),
+                    @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+            }
+    )
+    public ResponseEntity<Page<CategoryDTO>> searchByType(@RequestParam(name = "name", defaultValue = "PRODUCT")
+                                                          String name, Pageable pageable) {
+        Page<CategoryDTO> dto = categoryProductService.searchCategoryByType(name, pageable);
         return ResponseEntity.ok(dto);
     }
 
