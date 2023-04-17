@@ -96,6 +96,11 @@ Criar e executar o projeto em seu ambiente de desenvolvimento local é muito fá
 
 6. Documentação do Swagger contendo todos os endpoints que pode ser importada para o **postman** e fazer as requisições GET/PUT/DELETE E UPDATE, através do [link](http://localhost:8080/v3/api-docs). Obs: projeto precisa está em execução.
 
+### Usuário para logar no sistema: 
+``` bash
+  - email: corredato@gmail.com
+  - senha: admin123
+```
 #
 
 #### Respostas com as demais perguntas do questionario [aqui](https://github.com/joosecj/best-commerce-ws/tree/main/docs).
@@ -130,5 +135,5 @@ Criar e executar o projeto em seu ambiente de desenvolvimento local é muito fá
    </br> </br>
    <div align="center">
       <a href = "mailto:josecarloscjj@gmail.com"><img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white" target="_blank"></a>
-      <a href="https://www.linkedin.com/in/jos%C3%A9-carlos-a79736a0/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank"></a> 
+      <a href="https://www.linkedin.com/in/joosecj-dev/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" target="_blank"></a> 
    </div>
