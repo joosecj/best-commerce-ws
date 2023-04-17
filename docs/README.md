@@ -42,4 +42,4 @@ Além disso, para garantir a qualidade do código, criei testes unitários em al
 
 Em resumo, o objetivo do meu trabalho foi criar um aplicativo de e-commerce funcional e escalável, seguindo as melhores práticas de desenvolvimento em Java e Springboot, e utilizando tecnologias como Docker, DTO, Swagger UI, testes unitários e tratamento de erros personalizados para melhorar a eficiência, segurança e qualidade do sistema.
 
-![Diagrama](https://raw.githubusercontent.com/joosecj/best-commerce-ws/imgs/WS_Work.png)
+![Diagrama](https://raw.githubusercontent.com/joosecj/best-commerce-ws/main/docs/imgs/WS_Work.png)
