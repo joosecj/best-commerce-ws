@@ -1,6 +1,6 @@
 package com.github.bestcommerce.services;
 
-import com.github.bestcommerce.dtos.v1.StoreDTO;
+import com.github.bestcommerce.dtos.v1.StoreCategoryProductOwerDTO;
 import com.github.bestcommerce.entities.Store;
 import com.github.bestcommerce.repositories.StoreRepository;
 import com.github.bestcommerce.services.exceptions.ResourceNotFoundException;
@@ -43,7 +43,7 @@ class StoreServiceTests {
 
     @Test
     void findByIdShouldReturnStoreDTOWhenIdExists() {
-        StoreDTO result = storeService.findById(existingId);
+        StoreCategoryProductOwerDTO result = storeService.findById(existingId);
         Assertions.assertNotNull(result);
     }
 

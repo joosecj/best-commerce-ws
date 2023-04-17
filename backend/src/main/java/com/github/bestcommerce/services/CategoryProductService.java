@@ -23,8 +23,17 @@ import java.util.UUID;
 public class CategoryProductService {
     private final CategoryRepository categoryRepository;
 
+    private static final String NOT_FOUND_CATEGORY_ERROR_MESSAGE = "Category not found";
+
     public CategoryProductService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryDTO findById(UUID id) {
+        Category categoryEntity = categoryRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(NOT_FOUND_CATEGORY_ERROR_MESSAGE));
+        return new CategoryDTO(categoryEntity);
     }
 
     @Transactional(readOnly = true)
@@ -39,10 +48,20 @@ public class CategoryProductService {
         return categories.map(CategoryDTO::new);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CategoryDTO> searchCategoryByType(String type, Pageable pageable) {
+        try {
+            Page<Category> categories = categoryRepository.searchCategoriesByType(convertTextToCategoryType(type), pageable);
+            return categories.map(CategoryDTO::new);
+        } catch (IllegalArgumentException e) {
+            throw new ResourceNotFoundException(NOT_FOUND_CATEGORY_ERROR_MESSAGE);
+        }
+    }
+
     @Transactional
     public CategoryDTO insert(CategoryDTO categoryDTO) {
         try {
-            var categoryType = handleTypeCategory(categoryDTO.getType());
+            var categoryType = convertTextToCategoryType(categoryDTO.getType());
             Category categoryEntity = CategoryFactory.createCategory(categoryType);
             copyDtoToEntity(categoryDTO, categoryEntity);
             categoryEntity = categoryRepository.save(categoryEntity);
@@ -62,7 +81,7 @@ public class CategoryProductService {
             categoryEntity = categoryRepository.save(categoryEntity);
             return new CategoryDTO(categoryEntity);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException("Category not found");
+            throw new ResourceNotFoundException(NOT_FOUND_CATEGORY_ERROR_MESSAGE);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -73,24 +92,24 @@ public class CategoryProductService {
         try {
             categoryRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException("Category not found");
-        } catch (DataIntegrityViolationException e ) {
+            throw new ResourceNotFoundException(NOT_FOUND_CATEGORY_ERROR_MESSAGE);
+        } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Referential integrity failure");
         }
     }
 
     private void copyDtoToEntity(CategoryDTO categoryDTO, Category category) {
-        category.setName(formatDataToSave(categoryDTO.getName()));
+        category.setName(formatTextToUppercaseAndTrim(categoryDTO.getName()));
         category.setDescription(categoryDTO.getDescription());
-        category.setType(handleTypeCategory(formatDataToSave(categoryDTO.getType())));
+        category.setType(convertTextToCategoryType(formatTextToUppercaseAndTrim(categoryDTO.getType())));
     }
 
-    private static CategoryType handleTypeCategory(String text) {
-        var type = formatDataToSave(text);
+    private static CategoryType convertTextToCategoryType(String text) {
+        var type = formatTextToUppercaseAndTrim(text);
         return CategoryType.valueOf(type);
     }
 
-    private static String formatDataToSave(String text) {
+    private static String formatTextToUppercaseAndTrim(String text) {
         return text.toUpperCase().trim();
     }
 

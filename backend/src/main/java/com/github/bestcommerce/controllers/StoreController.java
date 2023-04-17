@@ -1,6 +1,7 @@
 package com.github.bestcommerce.controllers;
 
-import com.github.bestcommerce.dtos.v1.StoreDTO;
+import com.github.bestcommerce.dtos.v1.StoreCategoryDTO;
+import com.github.bestcommerce.dtos.v1.StoreCategoryProductOwerDTO;
 import com.github.bestcommerce.services.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -39,7 +40,7 @@ public class StoreController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = StoreDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = StoreCategoryDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -48,8 +49,8 @@ public class StoreController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
             }
     )
-    public ResponseEntity<StoreDTO> findById(@PathVariable UUID id) {
-        StoreDTO dto = storeService.findById(id);
+    public ResponseEntity<StoreCategoryProductOwerDTO> findById(@PathVariable UUID id) {
+        StoreCategoryProductOwerDTO dto = storeService.findById(id);
         return ResponseEntity.ok().body(dto);
     }
 
@@ -61,7 +62,7 @@ public class StoreController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = StoreDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = StoreCategoryDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -70,8 +71,8 @@ public class StoreController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
             }
     )
-    public ResponseEntity<Page<StoreDTO>> findAll(Pageable pageable) {
-        Page<StoreDTO> dto = storeService.findAll(pageable);
+    public ResponseEntity<Page<StoreCategoryDTO>> findAll(Pageable pageable) {
+        Page<StoreCategoryDTO> dto = storeService.findAll(pageable);
         return ResponseEntity.ok(dto);
     }
     @PreAuthorize("hasRole('CLIENT')")
@@ -83,7 +84,7 @@ public class StoreController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = StoreDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = StoreCategoryDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -92,11 +93,11 @@ public class StoreController {
                     @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
             }
     )
-    public ResponseEntity<StoreDTO> insert(@Valid @RequestBody StoreDTO dto) {
-        dto = storeService.insert(dto);
+    public ResponseEntity<StoreCategoryProductOwerDTO> insert(@Valid @RequestBody StoreCategoryDTO dto) {
+        var storeDTO = storeService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
-        return ResponseEntity.created(uri).body(dto);
+        return ResponseEntity.created(uri).body(storeDTO);
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}")
@@ -107,7 +108,7 @@ public class StoreController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = StoreDTO.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = StoreCategoryDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -117,7 +118,7 @@ public class StoreController {
                     @ApiResponse(description = "Conflict", responseCode = "409", content = @Content),
             }
     )
-    public ResponseEntity<StoreDTO> update(@PathVariable UUID id, @Valid @RequestBody StoreDTO dto) {
+    public ResponseEntity<StoreCategoryDTO> update(@PathVariable UUID id, @Valid @RequestBody StoreCategoryDTO dto) {
         dto = storeService.update(id, dto);
         return ResponseEntity.ok(dto);
     }

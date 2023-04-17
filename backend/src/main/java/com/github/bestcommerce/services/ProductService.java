@@ -28,23 +28,25 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final StoreRepository storeRepository;
+    private final UserService userService;
 
-    private static final String ERROR_NOT_FOUND_STORE = "Store not found";
-    private static final String ERROR_NOT_FOUND_PRODUCT = "Product not found";
-    private static final String ERROR_NOT_FOUND_CATEGORY = "Category not found";
+    private static final String NOT_FOUND_STORE_ERROR_MESSAGE = "Store not found";
+    private static final String NOT_FOUND_PRODUCT_ERROR_MESSAGE = "Product not found";
+    private static final String NOT_FOUND_CATEGORY_ERROR_MESSAGE = "Category not found";
 
     public ProductService(ProductRepository productRepository,
                           CategoryRepository categoryRepository,
-                          StoreRepository storeRepository) {
+                          StoreRepository storeRepository, UserService userService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.storeRepository = storeRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
     public ProductCategoriesStoreDTO findById(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(ERROR_NOT_FOUND_PRODUCT));
+                () -> new ResourceNotFoundException(NOT_FOUND_PRODUCT_ERROR_MESSAGE));
         return new ProductCategoriesStoreDTO(product);
     }
 
@@ -63,14 +65,11 @@ public class ProductService {
     @Transactional
     public ProductCategoriesStoreDTO insert(ProductCategoriesStoreDTO productCategoriesStoreDTO) {
         try {
-            UUID storeId = productCategoriesStoreDTO.getStore().getId();
-            var store = storeRepository.findById(storeId)
-                    .orElseThrow(() -> new ResourceNotFoundException(ERROR_NOT_FOUND_STORE));
             var productEntity = new Product();
-            copyDtoToEntity(productCategoriesStoreDTO, productEntity);
-            productEntity.setStore(store);
-            productEntity = productRepository.save(productEntity);
-            return new ProductCategoriesStoreDTO(productEntity);
+            return new ProductCategoriesStoreDTO(productRepository.save(
+                    copyDtoToEntity(
+                            productCategoriesStoreDTO, productEntity
+                    )));
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -80,11 +79,10 @@ public class ProductService {
     public ProductCategoriesStoreDTO update(UUID id, ProductCategoriesStoreDTO productCategoriesStoreDTO) {
         try {
             var productEntity = productRepository.getReferenceById(id);
-            copyDtoToEntity(productCategoriesStoreDTO, productEntity);
-            productEntity = productRepository.save(productEntity);
-            return new ProductCategoriesStoreDTO(productEntity);
+            return new ProductCategoriesStoreDTO(
+                    productRepository.save(copyDtoToEntity(productCategoriesStoreDTO, productEntity)));
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(ERROR_NOT_FOUND_PRODUCT);
+            throw new ResourceNotFoundException(NOT_FOUND_PRODUCT_ERROR_MESSAGE);
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
         }
@@ -95,13 +93,17 @@ public class ProductService {
         try {
             productRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(ERROR_NOT_FOUND_PRODUCT);
+            throw new ResourceNotFoundException(NOT_FOUND_PRODUCT_ERROR_MESSAGE);
         } catch (DataIntegrityViolationException e) {
             throw new DataBaseException("Referential integrity failure");
         }
     }
 
-    private void copyDtoToEntity(ProductCategoriesStoreDTO productCategoriesStoreDTO, Product product) {
+    private Product copyDtoToEntity(ProductCategoriesStoreDTO productCategoriesStoreDTO, Product product) {
+        var userEntity = userService.authenticated();
+        UUID storeId = userEntity.getStore().getId();
+        var storeEntity = storeRepository.findById(storeId)
+                .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_STORE_ERROR_MESSAGE));
         product.setName(productCategoriesStoreDTO.getName());
         product.setDescription(productCategoriesStoreDTO.getDescription());
         product.setPrice(productCategoriesStoreDTO.getPrice());
@@ -110,9 +112,11 @@ public class ProductService {
         for (CategoryDTO catDTO : productCategoriesStoreDTO.getCategories()) {
             var categoryId = catDTO.getId();
             Category categoryProduct = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException(ERROR_NOT_FOUND_CATEGORY));
+                    .orElseThrow(() -> new ResourceNotFoundException(NOT_FOUND_CATEGORY_ERROR_MESSAGE));
             product.getCategories().add(categoryProduct);
         }
+        product.setStore(storeEntity);
+        return product;
     }
 
 }

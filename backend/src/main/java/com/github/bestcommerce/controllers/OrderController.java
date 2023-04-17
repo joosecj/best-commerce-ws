@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.lang.model.type.UnionType;
 import java.net.URI;
 import java.util.UUID;
 
@@ -27,6 +26,7 @@ public class OrderController {
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
+
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping(value = "/{id}")
     @Operation(summary = "FindById Order", description = "FindById Order",
@@ -36,7 +36,7 @@ public class OrderController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = UnionType.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
@@ -58,7 +58,7 @@ public class OrderController {
                             content = {
                                     @Content(
                                             mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = UnionType.class))
+                                            array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class))
                                     )
                             }),
                     @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
