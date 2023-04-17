@@ -3,9 +3,9 @@ services:
   # ====================================================================================================================
   # POSTGRES SERVER
   # ====================================================================================================================
-  pg-docker-test:
+  pg-docker:
     image: postgres:14-alpine
-    container_name: dev-postgresql-test
+    container_name: dev-postgresql
     environment:
       POSTGRES_DB: "bestcommerce"
       POSTGRES_PASSWORD: "123456789"
@@ -14,13 +14,13 @@ services:
     volumes:
       - ${DATA_PATH_HOST}/postgresql/data:/var/lib/postgresql/data
     networks:
-      - dev-network-test
+      - dev-network
   # ====================================================================================================================
   # PGADMIN
   # ====================================================================================================================
   pgadmin-docker:
     image: dpage/pgadmin4
-    container_name: dev-pgadmin-test
+    container_name: dev-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: "jose@teste.com"
       PGADMIN_DEFAULT_PASSWORD: "1234567"
@@ -29,12 +29,33 @@ services:
     volumes:
       - ${DATA_PATH_HOST}/pgadmin:/var/lib/pgadmin
     depends_on:
-      - pg-docker-test
+      - pg-docker
     networks:
-      - dev-network-test
+      - dev-network
+  # ====================================================================================================================
+  # BESTCOMMERCE API
+  # ====================================================================================================================
+  bestcommerce-api:
+    image: joosecj/bestcommerce-api:v1
+    container_name: api-bestcommerce
+    environment:
+      DB_IP: "pg-docker"
+      DB_PORT: "5432"
+      DB_NAME: "bestcommerce"
+      API_SECRET_KEY: "53ccr3"
+      API_EXPIRE_LENGTH: "3600000"
+      DB_PASSWORD: "123456789"
+    ports:
+      - 8080:80
+    volumes:
+      - ${DATA_PATH_HOST}/bestcommerce:/var/lib/bestcommerce
+    depends_on:
+      - pg-docker
+    networks:
+      - dev-network
 # ======================================================================================================================
 # REDE
 # ======================================================================================================================
 networks:
-  dev-network-test:
+  dev-network:
     driver: bridge
