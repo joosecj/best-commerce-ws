@@ -27,7 +27,7 @@ public class StoreService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
     private final PermissionRepository permissionRepository;
-    private static final String ERROR_NOT_FOUND_STORE = "Store not found";
+    private static final String NOT_FOUND_STORE_ERROR_MESSAGE = "Store not found";
 
     public StoreService(StoreRepository storeRepository, CategoryRepository categoryRepository, UserService userService, PermissionRepository permissionRepository) {
         this.storeRepository = storeRepository;
@@ -56,6 +56,8 @@ public class StoreService {
             return new StoreCategoryProductOwerDTO(storeRepository.save(grantAdminPermission(storeEntity)));
         } catch (ConstraintViolationException e) {
             throw new ResourceNotFoundException("Error");
+        } catch (RuntimeException e) {
+            throw new DataBaseException("User already has store registered");
         }
     }
 
@@ -104,10 +106,12 @@ public class StoreService {
     }
 
     private Store grantAdminPermission(Store storeEntity) {
-        var idAdmin = UUID.fromString("8ddb099e-e17d-4dbb-9fc5-917b3b5f3640");
-        var permissionEntity = permissionRepository.findById(idAdmin).orElseThrow(
-                () -> new ResourceNotFoundException("Permission not found"));
-        storeEntity.getClient().getPermissions().add(permissionEntity);
+        var permissionAll = permissionRepository.findAll();
+        var permission = permissionAll.stream()
+                .filter(p -> p.getDescription().equals("ADMIN"))
+                .findFirst()
+                .orElse(null);
+        storeEntity.getClient().getPermissions().add(permission);
         return storeEntity;
     }
 
@@ -116,7 +120,7 @@ public class StoreService {
     }
 
     private static ResourceNotFoundException resourceNotFoundException() {
-        return new ResourceNotFoundException(ERROR_NOT_FOUND_STORE);
+        return new ResourceNotFoundException(NOT_FOUND_STORE_ERROR_MESSAGE);
     }
 
 }
